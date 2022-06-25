@@ -1,7 +1,16 @@
 import logo from './logo.svg';
 import './App.css';
+import {nearSignIn,nearSignOut} from "./auth"
 
 function App() {
+  const signIn = () => {
+    nearSignIn()
+  }
+
+  const signOut = () => {
+    nearSignOut()
+  }
+
   return (
     <div className="App">
       <header className="App-header">
@@ -17,6 +26,11 @@ function App() {
         >
           Learn React
         </a>
+
+        <div>
+          <button onClick={signIn}>Sign In</button>
+          <button onClick={signOut}>Sign Out</button>
+        </div>
       </header>
     </div>
   );
