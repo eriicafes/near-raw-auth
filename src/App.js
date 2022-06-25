@@ -1,35 +1,54 @@
 import logo from './logo.svg';
 import './App.css';
 import {nearSignIn,nearSignOut} from "./auth"
+import { useCallback, useEffect, useState } from 'react';
 
 function App() {
-  const signIn = () => {
-    nearSignIn()
+  const [loading, setLoading] = useState(true)
+  const [count, setCount] = useState(null)
+
+  const signIn = () =>  nearSignIn()
+
+  const signOut = () => nearSignOut()
+
+  const updateCount = useCallback(() => {
+    console.log("fetching count from near")
+    setLoading(true)
+    window.contract.get().then((count) => {
+      console.log("fetched count from near")
+      setCount(count)
+      setLoading(false)
+    })
+  }, [])
+
+  const increment = async () => {
+    setLoading(true)
+    const res = await window.contract.increment()
+    console.log({res})
+    updateCount()
   }
 
-  const signOut = () => {
-    nearSignOut()
-  }
+  useEffect(() => {
+    console.log("fetching count from near")
+    updateCount()
+  }, [updateCount])
 
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Count <code>{count === null ? "--" : count}</code>
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
+        <a className="App-link" href="/">
+          {window.accountId}
         </a>
 
         <div>
           <button onClick={signIn}>Sign In</button>
           <button onClick={signOut}>Sign Out</button>
+          <br />
+          <button onClick={increment} disabled={loading}>{loading ? "please wait..." : "Increment"}</button>
         </div>
       </header>
     </div>

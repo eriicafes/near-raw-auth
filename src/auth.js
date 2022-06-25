@@ -1,12 +1,14 @@
 import * as nearAPI from "near-api-js";
+import { Contract } from "near-api-js";
 
 const { connect, keyStores, WalletConnection } = nearAPI;
 
-const CONTRACT_NAME = "example-contract.testnet"
+const CONTRACT_NAME = "dev-1656120010372-85596841253342" || "example-contract.testnet"
 
 const config = {
   networkId: "testnet",
   keyStore: new keyStores.BrowserLocalStorageKeyStore(),
+  contractName: CONTRACT_NAME,
   nodeUrl: "https://rpc.testnet.near.org",
   walletUrl: "https://wallet.testnet.near.org",
   helperUrl: "https://helper.testnet.near.org",
@@ -19,7 +21,7 @@ const config = {
 // access key can then be used to connect to NEAR and sign transactions via keyStore
 
 export async function initContract() {
-      // connect to NEAR
+    // connect to NEAR
     const near = await connect(config);
     console.log("near connected")
 
@@ -30,6 +32,11 @@ export async function initContract() {
 
     window.accountId = connection.getAccountId()
     console.log("connected as:", window.accountId)
+
+    window.contract = await new Contract(connection.account(), CONTRACT_NAME, {
+        viewMethods: ["get"],
+        changeMethods: ["increment"],
+    })
 };
 
 // redirects user to wallet to authorize your dApp
